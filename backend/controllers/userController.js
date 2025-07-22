@@ -14,11 +14,11 @@ export const register = async (req, res) => {
 
         const user = await User.findOne({ username });
         if (user) {
-            return res.status(400).json({ message: "Username already exit try different" });
+            return res.status(400).json({ message: "Username already exists, try a different one" });
         }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // profilePhoto
         const maleProfilePhoto = `https://avatar.iran.liara.run/public/boy?username=${username}`;
         const femaleProfilePhoto = `https://avatar.iran.liara.run/public/girl?username=${username}`;
 
@@ -29,14 +29,17 @@ export const register = async (req, res) => {
             profilePhoto: gender === "male" ? maleProfilePhoto : femaleProfilePhoto,
             gender
         });
+
         return res.status(201).json({
             message: "Account created successfully.",
             success: true
-        })
+        });
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        return res.status(500).json({ message: "Something went wrong. Please try again later." });
     }
 };
+
 export const login = async (req, res) => {
     try {
         const { username, password } = req.body;
